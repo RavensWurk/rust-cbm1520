@@ -79,9 +79,14 @@ impl Plotter {
     pub fn new(args: Args) -> Self {
         unsafe {
             let mut driver: isize = 0;
+            let adapter = std::ffi::CString::new(
+                args.adapter.clone().unwrap_or("".into())
+            ).unwrap()
+             .into_bytes_with_nul();
+
             let res = opencbm::cbm_driver_open_ex(
                 &mut driver,
-                args.adapter.clone().unwrap_or(String::new()).as_mut_str() as *mut _ as *mut i8
+                adapter.as_ptr() as *mut _
             );
 
             if res != 0 {
